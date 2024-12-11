@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import { addSubscription } from "../lib/services/addSubscription";
 import useSession from "../hooks/useSession";
 
@@ -12,6 +12,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -102,14 +109,31 @@ export default function NewSubscription() {
             <Label htmlFor="paymentMethod" className="text-right">
               Payment Method
             </Label>
-            <Input
+            {/* <select
               id="paymentMethod"
-              type="text"
               value={payment_method}
               onChange={(e) => setPaymentMethod(e.target.value)}
               required
               className="col-span-3"
-            />
+            >
+              <option value="Credit Card">Credit Card</option>
+              <option value="PayPal">PayPal</option>
+            </select> */}
+            <div className="col-span-3" id="paymentMethod">
+              <Select
+                value={payment_method}
+                onValueChange={(value: string) => setPaymentMethod(value)}
+                required
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Credit Card">Credit Card</SelectItem>
+                  <SelectItem value="PayPal">PayPal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={submiting}>
