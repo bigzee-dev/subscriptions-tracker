@@ -10,11 +10,13 @@ export default function App() {
   const session = useSession();
 
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="bg-neutral-100 max-w-xl mx-auto">
       {session ? (
         <Dashboard />
       ) : (
-        <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+        <div className="flex items-center justify-center h-screen">
+          <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+        </div>
       )}
     </div>
   );

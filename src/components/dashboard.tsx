@@ -1,16 +1,15 @@
-import useSession from "../hooks/useSession";
-import NewSubscription from "./newSubscription";
-import ShowSubscriptions from "./showSubscriptions";
+import NewSubscription from "./addNewSub";
+import Navbar from "./navbar";
+import ShowSubscriptions from "./showSubs";
+import ShowSubs from "./testLogos";
 
 export default function Dashboard() {
-  const session = useSession();
-
   return (
     <div className="max-w-xl">
-      <h2>Dashboard</h2>
-      <p>{`Hi ${session?.user.email} `}</p>
+      <Navbar />
+      <img src="https://img.logo.dev/cloud.digitalocean.com" alt="" />
       <NewSubscription />
-      <ShowSubscriptions />
+      <ShowSubs />
     </div>
   );
 }

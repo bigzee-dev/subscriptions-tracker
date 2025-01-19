@@ -1,8 +1,4 @@
-import { useState, useEffect, SetStateAction } from "react";
-import { addSubscription } from "../lib/services/addSubscription";
-import useSession from "../hooks/useSession";
-
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,63 +8,93 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { supabase } from "../config/supabaseClient"; // Adjust the import according to your project structure
 
-export default function NewSubscription() {
+type Subscription = {
+  id: string;
+  user_id: string;
+  service_name: string;
+  amount: number;
+  payment_due_date: string;
+  payment_method: string;
+  created_at: string;
+};
+
+type EditSubscriptionProps = {
+  subscription: Subscription | null;
+  onClose: () => void;
+};
+
+export default function EditSubscription({
+  subscription,
+  onClose,
+}: EditSubscriptionProps) {
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [payment_method, setPaymentMethod] = useState<string>("");
+  const [payment_method, setPaymentMethod] = useState<string>("Credit Card");
   const [submiting, setSubmiting] = useState<boolean>(false);
-  //   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const session = useSession();
+  useEffect(() => {
+    if (subscription) {
+      setServiceName(subscription.service_name);
+      setPaymentDueDate(subscription.payment_due_date);
+      setAmount(subscription.amount.toString());
+      setPaymentMethod(subscription.payment_method);
+    }
+  }, [subscription]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
 
-    const response = await addSubscription(
-      session,
-      service_name,
-      payment_due_date,
-      parseFloat(amount), // Convert amount to number
-      payment_method
-    );
-    if (response && response.success) {
-      alert("Subscription added successfully");
-      setSubmiting(false);
+    const { error } = await supabase
+      .from("subscriptions")
+      .update({
+        service_name,
+        payment_due_date,
+        amount: parseFloat(amount), // Convert amount to number
+        payment_method,
+      })
+      .eq("id", subscription?.id);
+
+    if (error) {
+      console.error("Error updating subscription:", error);
+    } else {
+      console.log("Subscription updated successfully");
+      // onClose();  Close the dialog
     }
-    setServiceName("");
-    setPaymentDueDate("");
-    setAmount("");
-    setPaymentMethod("");
+    setSubmiting(false);
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>+</Button>
+        <Button className="text-blue-600" variant="link">
+          edit
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add new subscription</DialogTitle>
+          <DialogTitle>Edit Subscription</DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+        <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="serviceName" className="text-right">
-              Name
+              Service Name
             </Label>
             <Input
               id="serviceName"
@@ -93,40 +119,24 @@ export default function NewSubscription() {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="paymentDueDate" className="text-right">
+            <Label htmlFor="amount" className="text-right">
               Amount
             </Label>
             <Input
               id="amount"
               type="number"
-              value={amount.toString()}
+              value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
               className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="paymentMethod" className="text-right">
-              Payment Method
-            </Label>
-            {/* <select
-              id="paymentMethod"
-              value={payment_method}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              required
-              className="col-span-3"
-            >
-              <option value="Credit Card">Credit Card</option>
-              <option value="PayPal">PayPal</option>
-            </select> */}
-            <div className="col-span-3" id="paymentMethod">
-              <Select
-                value={payment_method}
-                onValueChange={(value: string) => setPaymentMethod(value)}
-                required
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="" />
+            <Label className="text-right">Payment Method</Label>
+            <div className="col-span-3">
+              <Select value={payment_method} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a payment method" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Credit Card">Credit Card</SelectItem>
@@ -137,7 +147,7 @@ export default function NewSubscription() {
           </div>
           <DialogFooter>
             <Button type="submit" disabled={submiting}>
-              Add Subscription
+              Update Subscription
             </Button>
           </DialogFooter>
         </form>

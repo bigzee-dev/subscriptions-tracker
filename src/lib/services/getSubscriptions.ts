@@ -2,7 +2,6 @@ import { supabase } from "../../config/supabaseClient";
 
 export const getSubscriptions = async (user_id: string) => {
   if (user_id) {
-    console.log(user_id);
     const { data, error } = await supabase
       .from("subscriptions")
       .select("*")
@@ -12,7 +11,6 @@ export const getSubscriptions = async (user_id: string) => {
       console.error("Error getting subscriptions:", error);
       return { success: false, error };
     } else {
-      console.log("Subscriptions:", data);
       return { success: true, data };
     }
   } else {
