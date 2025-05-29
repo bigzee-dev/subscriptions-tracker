@@ -15,14 +15,20 @@ import { Button } from "@/components/ui/button";
 type DeleteSubscriptionProps = {
   subscriptionId: string;
   subscriptionName: string;
-  onDelete: () => void;
+  deletesub: () => void;
 };
 
-export default function DeleteSubscription({
-  subscriptionId,
-  subscriptionName,
-  onDelete,
-}: DeleteSubscriptionProps) {
+export default function DeleteSubscription(props: DeleteSubscriptionProps) {
+  console.log("DeleteSubscription props:", props);
+  const { subscriptionId, subscriptionName, deletesub } = props;
+  // Add this debug line
+  console.log("DeleteSubscription props:", {
+    subscriptionId,
+    subscriptionName,
+    deletesub,
+    typeOfOnDelete: typeof deletesub,
+  });
+
   const handleDelete = async () => {
     const { error } = await supabase
       .from("subscriptions")
@@ -33,7 +39,7 @@ export default function DeleteSubscription({
       console.error("Error deleting subscription:", error);
     } else {
       console.log("Subscription deleted successfully");
-      //onDelete();  Call the onDelete callback to refresh the list
+      deletesub(); /* Call the onDelete callback to refresh the list*/
     }
   };
 

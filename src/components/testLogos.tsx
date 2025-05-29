@@ -98,50 +98,50 @@ const SubscriptionCard = ({
   );
 };
 
-const ShowSubs = () => {
-  const [subscriptions, setSubscriptions] = useState<Subscriptions[]>([]);
-  const session = useSession();
-  useEffect(() => {
-    const fetchSubscriptions = async () => {
-      if (session) {
-        const { data, error } = await getSubscriptions(session.user.id);
-        if (error) {
-          console.error("Error fetching subscriptions:", error);
-        } else {
-          setSubscriptions(data || []);
-        }
-      } else {
-        console.error("No valid session found");
-      }
-    };
+// const ShowSubs = () => {
+//   const [subscriptions, setSubscriptions] = useState<Subscriptions[]>([]);
+//   const session = useSession();
+//   useEffect(() => {
+//     const fetchSubscriptions = async () => {
+//       if (session) {
+//         const { data, error } = await getSubscriptions(session.user.id);
+//         if (error) {
+//           console.error("Error fetching subscriptions:", error);
+//         } else {
+//           setSubscriptions(data || []);
+//         }
+//       } else {
+//         console.error("No valid session found");
+//       }
+//     };
 
-    fetchSubscriptions();
-  }, [session]);
+//     fetchSubscriptions();
+//   }, [session]);
 
-  // Sort subscriptions by payment_due_date in ascending order
-  const sortedSubscriptions = subscriptions.sort((a, b) => {
-    return (
-      new Date(a.payment_due_date).getTime() -
-      new Date(b.payment_due_date).getTime()
-    );
-  });
+//   // Sort subscriptions by payment_due_date in ascending order
+//   const sortedSubscriptions = subscriptions.sort((a, b) => {
+//     return (
+//       new Date(a.payment_due_date).getTime() -
+//       new Date(b.payment_due_date).getTime()
+//     );
+//   });
 
-  return (
-    <div className="font-sans max-w-2xl mx-auto p-4">
-      {sortedSubscriptions.length > 0 ? (
-        <div className="space-y-6">
-          {sortedSubscriptions.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              subscription={subscription}
-            />
-          ))}
-        </div>
-      ) : (
-        <div>No subscriptions found</div>
-      )}
-    </div>
-  );
-};
+//   return (
+//     <div className="font-sans max-w-2xl mx-auto p-4">
+//       {sortedSubscriptions.length > 0 ? (
+//         <div className="space-y-6">
+//           {sortedSubscriptions.map((subscription) => (
+//             <SubscriptionCard
+//               key={subscription.id}
+//               subscription={subscription}
+//             />
+//           ))}
+//         </div>
+//       ) : (
+//         <div>No subscriptions found</div>
+//       )}
+//     </div>
+//   );
+// };
 
-export default ShowSubs;
+// export default ShowSubs;

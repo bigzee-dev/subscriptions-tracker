@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getSubscriptions } from "@/lib/services/getSubscriptions";
 import useSession from "../hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,39 +17,79 @@ type subscription = {
 
 export default function ShowSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const session = useSession();
 
-  useEffect(() => {
-    const fetchSubscriptions = async () => {
-      if (session) {
-        const { data, error } = await getSubscriptions(session.user.id);
-        if (error) {
-          console.error("Error fetching subscriptions:", error);
-        } else {
-          setSubscriptions(data || []);
-        }
-      } else {
-        console.error("No valid session found");
-      }
-    };
+  const fetchSubscriptions = useCallback(async () => {
+    console.log("fetchSubscriptions ran");
+    if (!session) {
+      console.error("No valid session found, cannot fetch subscriptions.");
+      setLoading(false);
+      return;
+    }
 
-    fetchSubscriptions();
+    setLoading(true);
+    setError(null);
+
+    const { data, error: fetchError } = await getSubscriptions(session.user.id); // Renamed 'error' to 'fetchError' to avoid conflict if 'error' is a global or already used variable.
+
+    if (fetchError) {
+      console.error("Error fetching subscriptions:", fetchError);
+      // FIX HERE: Assert 'fetchError' as an Error object or a general object with a 'message' property
+      setError(
+        (fetchError as Error).message ||
+          "An unknown error occurred while fetching subscriptions."
+      );
+      setSubscriptions([]);
+    } else {
+      setSubscriptions(data || []);
+      console.log(subscriptions);
+    }
+    setLoading(false);
   }, [session]);
 
-  // format date as DD/MM/YYYY
+  useEffect(() => {
+    fetchSubscriptions();
+  }, [fetchSubscriptions]);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB"); // Format as DD/MM/YYYY
+    return date.toLocaleDateString("en-GB");
   };
 
-  // Sort subscriptions by payment_due_date in ascending order
-  const sortedSubscriptions = subscriptions.sort((a, b) => {
+  const sortedSubscriptions = [...subscriptions].sort((a, b) => {
     return (
       new Date(a.payment_due_date).getTime() -
       new Date(b.payment_due_date).getTime()
     );
   });
+
+  function handleSubscriptionDeleted() {
+    console.log("Subscription deleted, refreshing list...");
+    fetchSubscriptions();
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-4 text-center">
+          <p>Loading subscriptions...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-4 text-center text-red-500">
+          <p>Error: {error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="font-sans max-w-2xl mx-auto p-4">
@@ -71,11 +111,12 @@ export default function ShowSubscriptions() {
                   {subscription.payment_method}
                 </div>
               </CardContent>
-              <div className="flex justify-between">
+              <div className="flex justify-between p-3">
                 <EditSubscription subscription={subscription} />
                 <DeleteSubscription
                   subscriptionId={subscription.id}
                   subscriptionName={subscription.service_name}
+                  deletesub={handleSubscriptionDeleted}
                 />
               </div>
             </Card>
@@ -84,7 +125,7 @@ export default function ShowSubscriptions() {
       ) : (
         <Card>
           <CardContent className="p-4 text-center">
-            <p>Loading...</p>
+            <p>No subscriptions found.</p>
           </CardContent>
         </Card>
       )}
