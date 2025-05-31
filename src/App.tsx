@@ -1,5 +1,5 @@
 // FILE: src/App.tsx
-import "./app.css";
+import "./App.css";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "./config/supabaseClient";
