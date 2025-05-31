@@ -1,4 +1,4 @@
-export type Subscriptions = {
+export type Subscription = {
   id: string;
   user_id: string;
   service_name: string;

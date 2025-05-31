@@ -1,4 +1,4 @@
-import { useState, useEffect, SetStateAction } from "react";
+import { useState } from "react";
 import { addSubscription } from "../lib/services/addSubscription";
 import useSession from "../hooks/useSession";
 import { Plus } from "lucide-react";
@@ -23,13 +23,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function NewSubscription() {
+interface NewSubscriptionsprops {
+  onRefresh: () => void;
+}
+
+export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [payment_method, setPaymentMethod] = useState<string>("");
   const [submiting, setSubmiting] = useState<boolean>(false);
-  //   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const session = useSession();
 
@@ -48,6 +51,7 @@ export default function NewSubscription() {
       if (response && response.success) {
         alert("Subscription added successfully");
         setSubmiting(false);
+        onRefresh();
       }
       setServiceName("");
       setPaymentDueDate("");
@@ -73,34 +77,41 @@ export default function NewSubscription() {
               Make changes to your profile here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-4  gap-4 py-4"
+          >
+            {/* Subscription name */}
+            <div className="col-span-4">
               <Label htmlFor="serviceName" className="text-right">
                 Name
               </Label>
               <Input
                 id="serviceName"
-                className="col-span-3"
+                className=""
                 type="text"
                 value={service_name}
                 onChange={(e) => setServiceName(e.target.value)}
                 required
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            {/* Payment due date */}
+            <div className="col-span-2">
               <Label htmlFor="paymentDueDate" className="text-right">
                 Payment due on:
               </Label>
+
               <Input
                 id="paymentDueDate"
                 type="date"
                 value={payment_due_date}
                 onChange={(e) => setPaymentDueDate(e.target.value)}
                 required
-                className="col-span-3"
+                className="col-span-3 flex justify-center"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            {/* Amount */}
+            <div className="col-span-4">
               <Label htmlFor="paymentDueDate" className="text-right">
                 Amount
               </Label>
@@ -110,24 +121,15 @@ export default function NewSubscription() {
                 value={amount.toString()}
                 onChange={(e) => setAmount(e.target.value)}
                 required
-                className="col-span-3"
+                className=""
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            {/* Payment method */}
+            <div className="col-span-4">
               <Label htmlFor="paymentMethod" className="text-right">
                 Payment Method
               </Label>
-              {/* <select
-              id="paymentMethod"
-              value={payment_method}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              required
-              className="col-span-3"
-            >
-              <option value="Credit Card">Credit Card</option>
-              <option value="PayPal">PayPal</option>
-            </select> */}
-              <div className="col-span-3" id="paymentMethod">
+              <div id="paymentMethod">
                 <Select
                   value={payment_method}
                   onValueChange={(value: string) => setPaymentMethod(value)}
@@ -143,7 +145,7 @@ export default function NewSubscription() {
                 </Select>
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="col-span-4">
               <Button type="submit" disabled={submiting}>
                 Add Subscription
               </Button>

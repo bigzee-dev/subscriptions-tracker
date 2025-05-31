@@ -1,4 +1,5 @@
 import { supabase } from "../config/supabaseClient"; // Adjust the import according to your project structure
+import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,15 +20,7 @@ type DeleteSubscriptionProps = {
 };
 
 export default function DeleteSubscription(props: DeleteSubscriptionProps) {
-  console.log("DeleteSubscription props:", props);
   const { subscriptionId, subscriptionName, deletesub } = props;
-  // Add this debug line
-  console.log("DeleteSubscription props:", {
-    subscriptionId,
-    subscriptionName,
-    deletesub,
-    typeOfOnDelete: typeof deletesub,
-  });
 
   const handleDelete = async () => {
     const { error } = await supabase
@@ -44,11 +37,16 @@ export default function DeleteSubscription(props: DeleteSubscriptionProps) {
   };
 
   return (
-    <div>
+    <div className="flex-1">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button className="text-red-600" variant="outline">
-            X
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-red-600 hover:text-red-700 text-xs"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

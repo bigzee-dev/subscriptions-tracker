@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Edit } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -72,86 +73,89 @@ export default function EditSubscription({
       console.error("Error updating subscription:", error);
     } else {
       console.log("Subscription updated successfully");
-      // onClose();  Close the dialog
+      onClose();
     }
     setSubmiting(false);
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="text-blue-600" variant="link">
-          edit
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Subscription</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="serviceName" className="text-right">
-              Service Name
-            </Label>
-            <Input
-              id="serviceName"
-              className="col-span-3"
-              type="text"
-              value={service_name}
-              onChange={(e) => setServiceName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="paymentDueDate" className="text-right">
-              Payment due on:
-            </Label>
-            <Input
-              id="paymentDueDate"
-              type="date"
-              value={payment_due_date}
-              onChange={(e) => setPaymentDueDate(e.target.value)}
-              required
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="amount" className="text-right">
-              Amount
-            </Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Payment Method</Label>
-            <div className="col-span-3">
-              <Select value={payment_method} onValueChange={setPaymentMethod}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a payment method" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Credit Card">Credit Card</SelectItem>
-                  <SelectItem value="PayPal">PayPal</SelectItem>
-                </SelectContent>
-              </Select>
+    <div className="flex-1">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full text-xs">
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Edit Subscription</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="serviceName" className="text-right">
+                Service Name
+              </Label>
+              <Input
+                id="serviceName"
+                className="col-span-3"
+                type="text"
+                value={service_name}
+                onChange={(e) => setServiceName(e.target.value)}
+                required
+              />
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={submiting}>
-              Update Subscription
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="paymentDueDate" className="text-right">
+                Payment due on:
+              </Label>
+              <Input
+                id="paymentDueDate"
+                type="date"
+                value={payment_due_date}
+                onChange={(e) => setPaymentDueDate(e.target.value)}
+                required
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="amount" className="text-right">
+                Amount
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Payment Method</Label>
+              <div className="col-span-3">
+                <Select value={payment_method} onValueChange={setPaymentMethod}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a payment method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Credit Card">Credit Card</SelectItem>
+                    <SelectItem value="PayPal">PayPal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={submiting}>
+                Update Subscription
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
