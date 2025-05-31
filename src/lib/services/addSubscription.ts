@@ -31,6 +31,14 @@ export const addSubscription = async (
       };
     }
 
+    if (checkError) {
+      return {
+        success: false,
+        error:
+          "Was not able to check if an existing subscription with the same name exists",
+      };
+    }
+
     // Insert the new subscription
     const { data, error } = await supabase.from("subscriptions").insert([
       {
