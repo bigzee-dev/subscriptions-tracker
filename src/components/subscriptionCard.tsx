@@ -80,7 +80,6 @@ export const SubscriptionCard = ({
   handleSubscriptionDeleted: () => void;
 }) => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  //   const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
 
   const handleClick = () => {
     return "";
@@ -134,8 +133,8 @@ export const SubscriptionCard = ({
     //     />
     //   </div>
     // </Card>
-    <Card className="w-full max-w-sm">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+    <Card className="w-full max-w-lg">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex gap-x-2 items-center">
           {logoUrl ? (
             <img

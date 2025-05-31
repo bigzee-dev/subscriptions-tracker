@@ -65,9 +65,9 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
     }
   };
   return (
-    <div className="font-sans max-w-2xl mx-auto p-4 h-">
+    <div className="flex flex-col items-center font-sans px-4">
       {sortedSubscriptions.length > 0 ? (
-        <div className="space-y-6">
+        <div className="w-full space-y-5">
           {sortedSubscriptions.map((subscription) => {
             console.log(subscription);
             return (

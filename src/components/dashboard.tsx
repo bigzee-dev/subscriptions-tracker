@@ -44,11 +44,10 @@ export default function Dashboard() {
   }, [fetchSubscriptions]);
 
   return (
-    <div className="max-w-xl h-screen flex flex-col">
+    <div className="w-full h-full min-h-screen flex flex-col">
       <Navbar />
-      <img src="https://img.logo.dev/cloud.digitalocean.com" alt="" />
       <NewSubscription onRefresh={fetchSubscriptions} />
-      <div className="flex-1">
+      <div className="flex-1 w-full">
         <ShowSubscriptions
           subscriptions={subscriptions}
           loading={loading}

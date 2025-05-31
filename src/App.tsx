@@ -10,7 +10,7 @@ export default function App() {
   const session = useSession();
 
   return (
-    <div className="bg-neutral-100 max-w-xl mx-auto">
+    <div className="bg-neutral-100 max-w-lg mx-auto">
       {session ? (
         <Dashboard />
       ) : (
