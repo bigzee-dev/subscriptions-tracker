@@ -63,7 +63,7 @@ export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
   };
 
   return (
-    <div className="flex justify-end p-4">
+    <div className="flex justify-end p-4 py-2">
       <Dialog>
         <DialogTrigger asChild>
           <Button className="flex items-center justify-center bg-gray-900">

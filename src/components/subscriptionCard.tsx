@@ -43,7 +43,9 @@ const formatDate = (date: Date) => date.toLocaleDateString("en-GB");
 
 // Helper to get next due date for a subscription
 function getNextDueDate(payment_due_day: number) {
-  const today = new Date();
+  const now = new Date();
+  // Set to midnight to ignore time
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const year = today.getFullYear();
   const month = today.getMonth();
 
