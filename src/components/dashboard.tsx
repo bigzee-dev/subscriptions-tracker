@@ -11,7 +11,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const session = useSession();
+  const { session } = useSession();
 
   const fetchSubscriptions = useCallback(async () => {
     console.log("fetchSubscriptions ran");

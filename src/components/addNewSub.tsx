@@ -34,7 +34,7 @@ export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
   const [payment_method, setPaymentMethod] = useState<string>("");
   const [submiting, setSubmiting] = useState<boolean>(false);
 
-  const session = useSession();
+  const { session } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
