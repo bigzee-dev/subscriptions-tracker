@@ -14,7 +14,6 @@ export default function Dashboard() {
   const { session } = useSession();
 
   const fetchSubscriptions = useCallback(async () => {
-    console.log("fetchSubscriptions ran");
     if (!session) {
       console.error("No valid session found, cannot fetch subscriptions.");
       setLoading(false);
@@ -46,7 +45,10 @@ export default function Dashboard() {
   return (
     <div className="w-full h-full min-h-screen flex flex-col">
       <Navbar />
-      <NewSubscription onRefresh={fetchSubscriptions} />
+      <NewSubscription
+        userId={session?.user.id}
+        onRefresh={fetchSubscriptions}
+      />
       <div className="flex-1 w-full">
         <ShowSubscriptions
           subscriptions={subscriptions}

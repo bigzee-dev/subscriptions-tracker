@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addSubscription } from "../lib/services/addSubscription";
-import useSession from "../hooks/useSession";
+// import useSession from "../hooks/useSession";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,25 +24,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface NewSubscriptionsprops {
+  userId?: string;
   onRefresh: () => void;
 }
 
-export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
+export default function NewSubscription({
+  userId,
+  onRefresh,
+}: NewSubscriptionsprops) {
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [payment_method, setPaymentMethod] = useState<string>("");
   const [submiting, setSubmiting] = useState<boolean>(false);
 
-  const { session } = useSession();
+  // const { session } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmiting(true);
 
-    if (session) {
+    if (userId) {
       const response = await addSubscription(
-        session.user.id,
+        userId,
         service_name,
         payment_due_date,
         parseFloat(amount), // Convert amount to number
@@ -60,6 +64,11 @@ export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
     } else {
       return { success: false, error: "No session available" };
     }
+  };
+
+  const handleAddNewPaymentMethod = () => {
+    // Logic to add a new payment method
+    alert("Add new payment method functionality not implemented yet.");
   };
 
   return (
@@ -132,13 +141,22 @@ export default function NewSubscription({ onRefresh }: NewSubscriptionsprops) {
               <div id="paymentMethod">
                 <Select
                   value={payment_method}
-                  onValueChange={(value: string) => setPaymentMethod(value)}
+                  onValueChange={(value: string) => {
+                    if (value === "add-new") {
+                      handleAddNewPaymentMethod(); // Call your custom function here
+                    } else {
+                      setPaymentMethod(value);
+                    }
+                  }}
                   required
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="add-new" className="bg-black/5">
+                      + Add new payment method
+                    </SelectItem>
                     <SelectItem value="Credit Card">Credit Card</SelectItem>
                     <SelectItem value="PayPal">PayPal</SelectItem>
                   </SelectContent>

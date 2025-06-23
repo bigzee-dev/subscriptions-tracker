@@ -12,26 +12,16 @@ export const addSubscription = async (
     const normalizedServiceName = service_name.trim();
 
     // Check if a subscription with the same name already exists
-    const { data: existingSubscription, error: checkError } = await supabase
+    // Remove .single() - it causes 406 when no records found
+    const { data: existingSubscriptions, error: checkError } = await supabase
       .from("subscriptions")
       .select("service_name")
       .eq("user_id", user_id)
-      .eq("service_name", normalizedServiceName)
-      .single();
+      .eq("service_name", normalizedServiceName);
 
-    /* if there is an existing subscription with the same name we alert the user and return 
-       from the function */
-    if (existingSubscription) {
-      alert(
-        `Subscription with this name ${existingSubscription.service_name} already exists`
-      );
-      return {
-        success: false,
-        error: "Subscription with the name already exists",
-      };
-    }
-
+    // Handle the check error (but ignore "no rows" scenario)
     if (checkError) {
+      console.error("Error checking existing subscription:", checkError);
       return {
         success: false,
         error:
@@ -39,21 +29,32 @@ export const addSubscription = async (
       };
     }
 
+    // Check if any subscriptions were found
+    if (existingSubscriptions && existingSubscriptions.length > 0) {
+      alert(
+        `Subscription with this name "${normalizedServiceName}" already exists`
+      );
+      return {
+        success: false,
+        error: "Subscription with the name already exists",
+      };
+    }
+
     // Insert the new subscription
     const { data, error } = await supabase.from("subscriptions").insert([
       {
         user_id,
-        service_name,
+        service_name: normalizedServiceName, // Use normalized name
         payment_due_date,
         amount,
         payment_method,
-        created_at: new Date(),
+        created_at: new Date().toISOString(), // Use ISO string format
       },
     ]);
 
     if (error) {
       console.error("Error adding subscription:", error);
-      return { success: false, error };
+      return { success: false, error: error.message };
     } else {
       console.log("Subscription added:", data);
       return { success: true, data };
