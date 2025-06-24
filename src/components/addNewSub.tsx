@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { addSubscription } from "../lib/services/addSubscription";
+import { addSubscription } from "../lib/services/createSubscription";
+import { PaymentPopover } from "./payment-method-popover";
+import { PaymentMethod } from "../lib/types";
 // import useSession from "../hooks/useSession";
 import { Plus } from "lucide-react";
 
@@ -12,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -25,13 +28,17 @@ import { Label } from "@/components/ui/label";
 
 interface NewSubscriptionsprops {
   userId?: string;
+  paymentMethods?: PaymentMethod[];
   onRefresh: () => void;
 }
 
 export default function NewSubscription({
   userId,
+  paymentMethods,
   onRefresh,
 }: NewSubscriptionsprops) {
+  console.log("addNewSub: ", paymentMethods);
+  // console.log("addNewSub[0]: ", paymentMethods?.[0]);
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
@@ -52,15 +59,22 @@ export default function NewSubscription({
         parseFloat(amount), // Convert amount to number
         payment_method
       );
+
       if (response && response.success) {
         alert("Subscription added successfully");
         setSubmiting(false);
+        setServiceName("");
+        setPaymentDueDate("");
+        setAmount("");
+        setPaymentMethod("");
         onRefresh();
       }
-      setServiceName("");
-      setPaymentDueDate("");
-      setAmount("");
-      setPaymentMethod("");
+      if (response && !response.success && response.error === "name-exists") {
+        alert(
+          `Subscription with this name "${response.existingSubscription}" already exists`
+        );
+        setSubmiting(false);
+      }
     } else {
       return { success: false, error: "No session available" };
     }
@@ -69,6 +83,7 @@ export default function NewSubscription({
   const handleAddNewPaymentMethod = () => {
     // Logic to add a new payment method
     alert("Add new payment method functionality not implemented yet.");
+    return <div>Nice</div>;
   };
 
   return (
@@ -151,19 +166,25 @@ export default function NewSubscription({
                   required
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="" />
+                    <SelectValue placeholder="Select a payment method" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="add-new" className="bg-black/5">
-                      + Add new payment method
+                    <PaymentPopover />
+
+                    <SelectItem value="Credit Card">
+                      {paymentMethods?.[0]?.name}
                     </SelectItem>
-                    <SelectItem value="Credit Card">Credit Card</SelectItem>
-                    <SelectItem value="PayPal">PayPal</SelectItem>
+                    <SelectItem value="PayPal">
+                      {paymentMethods?.[1]?.name}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <DialogFooter className="col-span-4">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
               <Button type="submit" disabled={submiting}>
                 Add Subscription
               </Button>

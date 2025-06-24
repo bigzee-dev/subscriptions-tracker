@@ -31,12 +31,13 @@ export const addSubscription = async (
 
     // Check if any subscriptions were found
     if (existingSubscriptions && existingSubscriptions.length > 0) {
-      alert(
+      console.log(
         `Subscription with this name "${normalizedServiceName}" already exists`
       );
       return {
         success: false,
-        error: "Subscription with the name already exists",
+        error: "name-exists",
+        existingSubscription: normalizedServiceName,
       };
     }
 

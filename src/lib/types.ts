@@ -7,3 +7,10 @@ export type Subscription = {
   payment_method: string;
   created_at: string;
 };
+
+export type PaymentMethod = {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+};

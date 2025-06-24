@@ -1,60 +1,44 @@
-import { useEffect, useState, useCallback } from "react";
-import { getSubscriptions } from "@/lib/services/getSubscriptions";
+import { useEffect, useCallback } from "react";
 import useSession from "../hooks/useSession";
 import NewSubscription from "./addNewSub";
 import Navbar from "./navbar";
 import ShowSubscriptions from "./showSubs";
-import { Subscription } from "../lib/types";
+import { useSubscriptions } from "../hooks/useSubscriptions";
+import { usePaymentMethods } from "../hooks/usePaymentMethods.ts";
 
 export default function Dashboard() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const { session } = useSession();
-
-  const fetchSubscriptions = useCallback(async () => {
-    if (!session) {
-      console.error("No valid session found, cannot fetch subscriptions.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    const { data, error: fetchError } = await getSubscriptions(session.user.id);
-
-    if (fetchError) {
-      console.error("Error fetching subscriptions:", fetchError);
-      setError(
-        (fetchError as Error).message ||
-          "An unknown error occurred while fetching subscriptions."
-      );
-      setSubscriptions([]);
-    } else {
-      setSubscriptions(data || []);
-    }
-    setLoading(false);
-  }, [session]);
+  const { subscriptions, loading, error, fetchSubscriptions } =
+    useSubscriptions();
+  const { paymentMethods, fetchPaymentMethods } = usePaymentMethods();
 
   useEffect(() => {
-    fetchSubscriptions();
-  }, [fetchSubscriptions]);
+    if (session?.user.id) {
+      fetchPaymentMethods(session.user.id);
+      fetchSubscriptions(session.user.id);
+    }
+  }, [fetchSubscriptions, fetchPaymentMethods, session?.user.id]);
+
+  const handleRefresh = useCallback(() => {
+    if (session?.user.id) {
+      fetchSubscriptions(session.user.id);
+    }
+  }, [fetchSubscriptions, session?.user.id]);
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col">
       <Navbar />
       <NewSubscription
         userId={session?.user.id}
-        onRefresh={fetchSubscriptions}
+        paymentMethods={paymentMethods}
+        onRefresh={handleRefresh}
       />
       <div className="flex-1 w-full">
         <ShowSubscriptions
           subscriptions={subscriptions}
           loading={loading}
           error={error}
-          onRefresh={fetchSubscriptions}
+          onRefresh={handleRefresh}
         />
       </div>
     </div>
