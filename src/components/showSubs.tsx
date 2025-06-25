@@ -71,7 +71,6 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
       {sortedSubscriptions.length > 0 ? (
         <div className="w-full space-y-5">
           {sortedSubscriptions.map((subscription) => {
-            console.log(subscription);
             return (
               // <Card key={subscription.id} className="rounded-2xl">
               //   <CardContent className="font-sans grid grid-cols-3 gap-2 pt-1 px-3">

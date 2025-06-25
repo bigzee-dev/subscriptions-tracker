@@ -26,7 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface NewSubscriptionsprops {
+interface PaymentMethodProps {
   userId?: string;
   paymentMethods?: PaymentMethod[];
   onRefresh: () => void;
@@ -36,9 +36,7 @@ export default function NewSubscription({
   userId,
   paymentMethods,
   onRefresh,
-}: NewSubscriptionsprops) {
-  console.log("addNewSub: ", paymentMethods);
-  // console.log("addNewSub[0]: ", paymentMethods?.[0]);
+}: PaymentMethodProps) {
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
