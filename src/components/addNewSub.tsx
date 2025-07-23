@@ -85,10 +85,10 @@ export default function NewSubscription({
   };
 
   return (
-    <div className="flex justify-end p-4 py-2">
+    <div className="">
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="flex items-center justify-center bg-gray-900">
+          <Button className="flex items-center justify-center bg-blue-700">
             <Plus />
           </Button>
         </DialogTrigger>
@@ -169,10 +169,10 @@ export default function NewSubscription({
                   <SelectContent>
                     <PaymentPopover />
 
-                    <SelectItem value="Credit Card">
+                    <SelectItem value={`${paymentMethods?.[0]?.name}`}>
                       {paymentMethods?.[0]?.name}
                     </SelectItem>
-                    <SelectItem value="PayPal">
+                    <SelectItem value={`${paymentMethods?.[1]?.name}`}>
                       {paymentMethods?.[1]?.name}
                     </SelectItem>
                   </SelectContent>

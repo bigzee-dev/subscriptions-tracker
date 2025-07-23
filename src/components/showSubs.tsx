@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { SubscriptionCard } from "./subscriptionCard";
+import { SubscriptionCard } from "./subscription-card";
 import { Subscription } from "../lib/types";
 
 interface ShowSubscriptionsProps {

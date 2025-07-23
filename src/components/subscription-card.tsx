@@ -1,6 +1,5 @@
-"use client";
-/* this is a sample component I am using it in subscriptioncard */
-
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Calendar, CreditCard, Edit, MoreVertical, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,49 +10,134 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
+import EditSubscription from "./editSub";
+import DeleteSubscription from "./deleteSub";
+import { CiGlobe } from "react-icons/ci";
 
 interface SubscriptionCardProps {
-  name?: string;
-  amount?: string;
-  dueDate?: string;
-  paymentMethod?: string;
-  status?: "active" | "pending" | "cancelled";
-  onEdit?: () => void;
-  onDelete?: () => void;
+  id: string;
+  user_id: string;
+  service_name: string;
+  amount: number;
+  payment_due_date: string;
+  payment_due_day: number;
+  payment_method: string;
+  created_at: string;
 }
 
-export default function SubscriptionCard({
-  name = "Netflix Premium",
-  amount = "$15.99",
-  dueDate = "Dec 15, 2024",
-  paymentMethod = "•••• 4242",
-  status = "active",
-  onEdit = () => console.log("Edit clicked"),
-  onDelete = () => console.log("Delete clicked"),
-}: SubscriptionCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800 hover:bg-green-100";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
-      case "cancelled":
-        return "bg-red-100 text-red-800 hover:bg-red-100";
-      default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100";
-    }
+const getLogoUrl = async (serviceName: string) => {
+  try {
+    const response = await axios.get(
+      `https://logo.clearbit.com/${serviceName}.com`
+    );
+    return response.config.url;
+  } catch (error) {
+    console.error("Error fetching logo:", error);
+    return null;
+  }
+};
+
+// For display, use getNextDueDate(subscription.payment_due_day)
+const formatDate = (date: Date) => date.toLocaleDateString("en-GB");
+
+// Helper to get next due date for a subscription
+function getNextDueDate(payment_due_day: number) {
+  const now = new Date();
+  // Set to midnight to ignore time
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  // Try to create a date for this month
+  let dueDate = new Date(year, month, payment_due_day);
+
+  // If due date has already passed, move to next month
+  if (dueDate < today) {
+    // Handle months with fewer days (e.g., Feb 30th becomes Mar 2nd)
+    dueDate = new Date(year, month + 1, payment_due_day);
+  }
+
+  return dueDate;
+}
+
+const getDaysLeft = (payment_due_day: number) => {
+  const today = new Date();
+  const nextDue = getNextDueDate(payment_due_day);
+  // Calculate difference in milliseconds, then convert to days
+  const diffTime = nextDue.getTime() - today.setHours(0, 0, 0, 0);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+// const getStatusColor = (status: string) => {
+//   switch (status) {
+//     case "active":
+//       return "bg-green-100 text-green-800 hover:bg-green-100";
+//     case "pending":
+//       return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
+//     case "cancelled":
+//       return "bg-red-100 text-red-800 hover:bg-red-100";
+//     default:
+//       return "bg-gray-100 text-gray-800 hover:bg-gray-100";
+//   }
+// };
+
+export const SubscriptionCard = ({
+  subscription,
+  handleSubscriptionDeleted,
+}: {
+  subscription: SubscriptionCardProps;
+  handleSubscriptionDeleted: () => void;
+}) => {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Calculate days left
+  const daysLeft = getDaysLeft(subscription.payment_due_day);
+
+  const handleClick = () => {
+    return "";
   };
 
+  useEffect(() => {
+    const fetchLogo = async () => {
+      const url = await getLogoUrl(subscription.service_name);
+      setLogoUrl(url ?? null);
+    };
+
+    fetchLogo();
+  }, [subscription.service_name]);
+
   return (
-    <Card className="w-full max-w-sm p-4">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-          <h3 className="font-semibold text-base">{name}</h3>
-          <Badge variant="secondary" className={getStatusColor(status)}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Badge>
+    <Card className="w-full max-w-lg">
+      <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="flex gap-x-2 items-center">
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={`${subscription.service_name} logo`}
+              className="w-6 h-6 mr-1"
+            />
+          ) : (
+            <div className="w-6 h-6 mr-1 flex items-center justify-center">
+              <CiGlobe className="text-gray-600" size="1.4em" />
+            </div>
+          )}
+          <h3 className="font-semibold text-base">
+            {subscription.service_name}
+          </h3>
         </div>
+        <div className="absolute left-1/2 -translate-x-1/2">
+          {daysLeft === 0 ? (
+            <span className="text-xs font-semibold text-red-600">
+              Payment due today
+            </span>
+          ) : (
+            <span className="text-xs font-normal text-gray-500">
+              ({daysLeft} days left)
+            </span>
+          )}
+        </div>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -62,11 +146,11 @@ export default function SubscriptionCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onEdit}>
+            <DropdownMenuItem onClick={handleClick}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete} className="text-red-600">
+            <DropdownMenuItem onClick={handleClick} className="text-red-600">
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
@@ -76,7 +160,9 @@ export default function SubscriptionCard({
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Amount</span>
-          <span className="font-semibold text-lg">{amount}</span>
+          <span className="font-semibold text-lg">
+            P {subscription.amount.toFixed(2)}
+          </span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -84,7 +170,9 @@ export default function SubscriptionCard({
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Due Date</span>
           </div>
-          <span className="text-sm font-medium">{dueDate}</span>
+          <span className="text-sm font-medium">
+            {formatDate(getNextDueDate(subscription.payment_due_day))}
+          </span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -94,30 +182,23 @@ export default function SubscriptionCard({
               Payment Method
             </span>
           </div>
-          <span className="text-sm font-medium">{paymentMethod}</span>
+          <span className="text-sm font-medium">
+            {subscription.payment_method}
+          </span>
         </div>
 
         <div className="flex space-x-2 pt-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onEdit}
-            className="flex-1 text-xs"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onDelete}
-            className="flex-1 text-red-600 hover:text-red-700 text-xs"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
+          <EditSubscription
+            subscription={subscription}
+            onClose={handleSubscriptionDeleted}
+          />
+          <DeleteSubscription
+            subscriptionId={subscription.id}
+            subscriptionName={subscription.service_name}
+            deletesub={handleSubscriptionDeleted}
+          />
         </div>
       </CardContent>
     </Card>
   );
-}
+};
