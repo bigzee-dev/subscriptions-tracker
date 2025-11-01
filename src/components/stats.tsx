@@ -11,9 +11,10 @@ export const Stats: React.FC<StatsProps> = ({ subscriptions }) => {
 
   return (
     <div className="w-full max-w-lg mx-auto p-2 rounded-lg bg-white shadow flex flex-col items-start">
-      <h2 className="text-xs font-medium mb-1 text-neutral-600">
-        Monthly Spend
-      </h2>
+      <span className="mb-1 text-[12px] font-normal text-neutral-500">
+        {subscriptions.length} subscriptions
+      </span>
+
       <div className="text-sm font-semibold text-neutral-900">
         P {totalAmount.toFixed(2)}
       </div>

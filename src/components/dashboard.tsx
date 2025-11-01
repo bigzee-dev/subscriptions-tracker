@@ -13,6 +13,7 @@ export default function Dashboard() {
     useSubscriptions();
   const { paymentMethods, fetchPaymentMethods } = usePaymentMethods();
 
+
   useEffect(() => {
     if (session?.user.id) {
       fetchPaymentMethods(session.user.id);
@@ -33,7 +34,7 @@ export default function Dashboard() {
         <Stats subscriptions={subscriptions} />
         <NewSubscription
           userId={session?.user.id}
-          paymentMethods={paymentMethods}
+          paymentMethods={paymentMethods}         
           onRefresh={handleRefresh}
         />
       </div>

@@ -72,33 +72,7 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
         <div className="w-full space-y-5">
           {sortedSubscriptions.map((subscription) => {
             return (
-              // <Card key={subscription.id} className="rounded-2xl">
-              //   <CardContent className="font-sans grid grid-cols-3 gap-2 pt-1 px-3">
-              //     <div className="flex items-center font-medium text-left">
-              //       {subscription.service_name}
-              //     </div>
-              //     <span className="flex items-center text-sm text-gray-700 font-medium">
-              //       P{subscription.amount.toFixed(2)}
-              //     </span>
-              //     <div className="flex items-center text-sm text-gray-700 font-medium">
-              //       {formatDate(getNextDueDate(subscription.payment_due_day))}
-              //     </div>
-              //     <div className="flex items-center text-sm">
-              //       {subscription.payment_method}
-              //     </div>
-              //   </CardContent>
-              //   <div className="flex justify-between p-3">
-              //     <EditSubscription
-              //       subscription={subscription}
-              //       onClose={handleSubscriptionDeleted}
-              //     />
-              //     <DeleteSubscription
-              //       subscriptionId={subscription.id}
-              //       subscriptionName={subscription.service_name}
-              //       deletesub={handleSubscriptionDeleted}
-              //     />
-              //   </div>
-              // </Card>
+             
               <SubscriptionCard
                 key={subscription.id}
                 subscription={subscription}

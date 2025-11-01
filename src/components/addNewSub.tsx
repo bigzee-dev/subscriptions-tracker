@@ -40,10 +40,12 @@ export default function NewSubscription({
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [payment_method, setPaymentMethod] = useState<string>("");
+  const [payment_method, setPaymentMethod] = useState<string>("");  
+  const paymentCyclesList = ["monthly", "quarterly", "semi-annual", "annual"];
+  const [payment_cycle, setPaymentCycle] = useState<string>(paymentCyclesList[0]);
   const [submiting, setSubmiting] = useState<boolean>(false);
-
-  // const { session } = useSession();
+ 
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +56,7 @@ export default function NewSubscription({
         userId,
         service_name,
         payment_due_date,
+        payment_cycle,
         parseFloat(amount), // Convert amount to number
         payment_method
       );
@@ -88,7 +91,7 @@ export default function NewSubscription({
     <div className="">
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="flex items-center justify-center bg-blue-700">
+          <Button className="flex items-center justify-center bg-blue-600">
             <Plus />
           </Button>
         </DialogTrigger>
@@ -133,8 +136,8 @@ export default function NewSubscription({
               />
             </div>
             {/* Amount */}
-            <div className="col-span-4">
-              <Label htmlFor="paymentDueDate" className="text-right">
+            <div className="col-span-2">
+              <Label htmlFor="amount" className="text-right">
                 Amount
               </Label>
               <Input
@@ -145,6 +148,36 @@ export default function NewSubscription({
                 required
                 className=""
               />
+            </div>
+             {/* Payment cycle */}
+             <div className="col-span-2">
+              <Label htmlFor="paymentCycle" className="text-right">
+                Payment cycle
+              </Label>
+              <Select
+                 
+                  value={payment_cycle}
+                  onValueChange= {(value: string) => {
+                   
+                      setPaymentCycle(value);
+                    
+                  }}
+                  
+                 
+                  required
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a payment method" />
+                  </SelectTrigger>
+                   <SelectContent>
+                   {paymentCyclesList.map((cycle: string) => (
+                     <SelectItem key={cycle} value={cycle}>
+                       {cycle}
+                     </SelectItem>
+                   ))}
+                  
+                 </SelectContent>
+                </Select>
             </div>
             {/* Payment method */}
             <div className="col-span-4">

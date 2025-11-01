@@ -4,6 +4,7 @@ export const addSubscription = async (
   user_id: string,
   service_name: string,
   payment_due_date: string,
+  payment_cycle: string,
   amount: number,
   payment_method: string
 ) => {
@@ -49,6 +50,7 @@ export const addSubscription = async (
         payment_due_date,
         amount,
         payment_method,
+        payment_cycle,
         created_at: new Date().toISOString(), // Use ISO string format
       },
     ]);

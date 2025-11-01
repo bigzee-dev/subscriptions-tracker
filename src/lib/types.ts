@@ -4,6 +4,7 @@ export type Subscription = {
   service_name: string;
   amount: number;
   payment_due_date: string;
+  payment_cycle: "monthly" | "quarterly" | "semi-annual" | "annual"; 
   payment_method: string;
   created_at: string;
 };

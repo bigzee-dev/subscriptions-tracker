@@ -119,7 +119,7 @@ export const SubscriptionCard = ({
             />
           ) : (
             <div className="w-6 h-6 mr-1 flex items-center justify-center">
-              <CiGlobe className="text-gray-600" size="1.4em" />
+              <CiGlobe className="text-neutral-600" size="1.4em" />
             </div>
           )}
           <h3 className="font-semibold text-base">
@@ -132,7 +132,7 @@ export const SubscriptionCard = ({
               Payment due today
             </span>
           ) : (
-            <span className="text-xs font-normal text-gray-500">
+            <span className="text-xs font-normal text-neutral-500">
               ({daysLeft} days left)
             </span>
           )}
@@ -159,30 +159,31 @@ export const SubscriptionCard = ({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Amount</span>
-          <span className="font-semibold text-lg">
+          <div className="flex items-center space-x-2 text-neutral-600">
+            <Calendar className="h-4 w-4 " />
+            <span className="text-sm text-">Amount</span>
+          </div>
+          <span className="font-semibold text-lg text-neutral-900">
             P {subscription.amount.toFixed(2)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Due Date</span>
+          <div className="flex items-center space-x-2 text-neutral-600">
+            <Calendar className="h-4 w-4 " />
+            <span className="text-sm text-">Due Date</span>
           </div>
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium text-neutral-900">
             {formatDate(getNextDueDate(subscription.payment_due_day))}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              Payment Method
-            </span>
+          <div className="flex items-center space-x-2 text-neutral-600">
+            <CreditCard className="h-4 w-4 " />
+            <span className="text-sm ">Payment Method</span>
           </div>
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium text-neutral-900">
             {subscription.payment_method}
           </span>
         </div>
