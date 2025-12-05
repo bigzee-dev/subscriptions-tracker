@@ -16,39 +16,101 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
   // const formatDate = (date: Date) => date.toLocaleDateString("en-GB");
 
   // Helper to get next due date for a subscription
-  function getNextDueDate(payment_due_day: number) {
+  // Compute the next due date for any subscription based on its initial payment_due_date and payment_cycle
+  function getNextDueDateForSubscription(sub: Subscription) {
     const now = new Date();
-    // Set to midnight to ignore time
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const year = today.getFullYear();
-    const month = today.getMonth();
 
-    // Try to create a date for this month
-    let dueDate = new Date(year, month, payment_due_day);
+    const init = new Date(sub.payment_due_date);
+    const initDay = init.getDate();
+    const initMonth = init.getMonth();
+    const initYear = init.getFullYear();
 
-    // If due date has already passed, move to next month
-    if (dueDate < today) {
-      // Handle months with fewer days (e.g., Feb 30th becomes Mar 2nd)
-      dueDate = new Date(year, month + 1, payment_due_day);
+    const cycleToMonths: Record<string, number> = {
+      monthly: 1,
+      quarterly: 3,
+      "semi-annual": 6,
+      annual: 12,
+    };
+
+    const cycleMonths = cycleToMonths[sub.payment_cycle] ?? 1;
+
+    // Number of months difference between the initial date and today
+    const diffMonths =
+      (today.getFullYear() - initYear) * 12 + (today.getMonth() - initMonth);
+
+    // Find the smallest k >= 0 such that init month + k*cycleMonths yields a date >= today
+    let k = Math.floor(diffMonths / cycleMonths);
+    if (k < 0) k = 0;
+
+    let candidate = new Date(initYear, initMonth + k * cycleMonths, initDay);
+
+    // If candidate is before today, step forward until it's >= today
+    while (candidate < today) {
+      k += 1;
+      candidate = new Date(initYear, initMonth + k * cycleMonths, initDay);
     }
 
-    return dueDate;
+    return candidate;
   }
 
   // const today = new Date();
   // today.setHours(0, 0, 0, 0);
 
-  const subscriptionsWithDueDay = subscriptions.map((sub) => ({
-    ...sub,
-    payment_due_day: new Date(sub.payment_due_date).getDate(),
-  }));
-
-  const sortedSubscriptions = [...subscriptionsWithDueDay].sort((a, b) => {
-    const aDue = getNextDueDate(a.payment_due_day);
-    const bDue = getNextDueDate(b.payment_due_day);
-
-    return aDue.getTime() - bDue.getTime();
+  // Compute next due date for each subscription and attach it for sorting and display
+  const subsWithNextDue = subscriptions.map((sub) => {
+    const nextDue = getNextDueDateForSubscription(sub);
+    return {
+      ...sub,
+      payment_due_day: new Date(sub.payment_due_date).getDate(),
+      payment_next_due_date: nextDue.toISOString(),
+    } as Subscription & {
+      payment_due_day: number;
+      payment_next_due_date: string;
+    };
   });
+
+  // Upcoming = within the next 30 days (including today)
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  cutoff.setDate(cutoff.getDate() + 30);
+
+  const upcoming = subsWithNextDue
+    .filter((s) => new Date(s.payment_next_due_date) <= cutoff)
+    .sort(
+      (a, b) =>
+        new Date(a.payment_next_due_date).getTime() -
+        new Date(b.payment_next_due_date).getTime()
+    );
+
+  // Remaining groups: quarterly, semi-annual, annual (exclude any already in upcoming)
+  const notUpcoming = subsWithNextDue.filter(
+    (s) => !upcoming.some((u) => u.id === s.id)
+  );
+
+  const quarterly = notUpcoming
+    .filter((s) => s.payment_cycle === "quarterly")
+    .sort(
+      (a, b) =>
+        new Date(a.payment_next_due_date).getTime() -
+        new Date(b.payment_next_due_date).getTime()
+    );
+
+  const semiAnnual = notUpcoming
+    .filter((s) => s.payment_cycle === "semi-annual")
+    .sort(
+      (a, b) =>
+        new Date(a.payment_next_due_date).getTime() -
+        new Date(b.payment_next_due_date).getTime()
+    );
+
+  const annual = notUpcoming
+    .filter((s) => s.payment_cycle === "annual")
+    .sort(
+      (a, b) =>
+        new Date(a.payment_next_due_date).getTime() -
+        new Date(b.payment_next_due_date).getTime()
+    );
 
   function handleSubscriptionDeleted() {
     console.log("Subscription deleted, refreshing list...");
@@ -68,14 +130,17 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
   };
   return (
     <div className="flex flex-col items-center font-sans px-4">
-      {sortedSubscriptions.length > 0 ? (
+      {upcoming.length > 0 ? (
         <div className="w-full space-y-5">
-          {sortedSubscriptions.map((subscription) => {
+          <h2 className="text-lg font-semibold">Upcoming (next 30 days)</h2>
+          {upcoming.map((subscription) => {
             return (
-             
               <SubscriptionCard
                 key={subscription.id}
-                subscription={subscription}
+                subscription={{
+                  ...subscription,
+                  payment_next_due_date: subscription.payment_next_due_date,
+                }}
                 handleSubscriptionDeleted={handleSubscriptionDeleted}
               />
             );
@@ -98,6 +163,45 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
             <p>Error: {error}</p>
           </CardContent>
         </Card>
+      )}
+      {/* Other cycles */}
+      {quarterly.length > 0 && (
+        <div className="w-full space-y-5 mt-6">
+          <h2 className="text-md font-semibold">Quarterly</h2>
+          {quarterly.map((subscription) => (
+            <SubscriptionCard
+              key={subscription.id}
+              subscription={subscription}
+              handleSubscriptionDeleted={handleSubscriptionDeleted}
+            />
+          ))}
+        </div>
+      )}
+
+      {semiAnnual.length > 0 && (
+        <div className="w-full space-y-5 mt-6">
+          <h2 className="text-md font-semibold">Semi-Annual</h2>
+          {semiAnnual.map((subscription) => (
+            <SubscriptionCard
+              key={subscription.id}
+              subscription={subscription}
+              handleSubscriptionDeleted={handleSubscriptionDeleted}
+            />
+          ))}
+        </div>
+      )}
+
+      {annual.length > 0 && (
+        <div className="w-full space-y-5 mt-6">
+          <h2 className="text-md font-semibold">Annual</h2>
+          {annual.map((subscription) => (
+            <SubscriptionCard
+              key={subscription.id}
+              subscription={subscription}
+              handleSubscriptionDeleted={handleSubscriptionDeleted}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
