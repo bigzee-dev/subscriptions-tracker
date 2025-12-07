@@ -20,7 +20,6 @@ import {
 // } from "@/components/ui/popover";
 import { useState } from "react";
 import { addNewPaymentMethod } from "@/lib/services/create-payment-method";
-import { on } from "events";
 
 export default function NewPaymentPopover({
   user_id,
