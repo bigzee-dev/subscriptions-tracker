@@ -116,7 +116,7 @@ export const SubscriptionCard = ({
   const infoBox = "flex flex-col items-start gap-y-2 max-w-max ";
 
   return (
-    <Card className="w-full max-w-lg col-span-1">
+    <Card className="w-full col-span-1 border border-neutral-400">
       <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-1">
         <div className="flex gap-x-1.5 items-center ">
           {logoUrl ? (

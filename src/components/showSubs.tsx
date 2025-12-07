@@ -131,11 +131,11 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
     }
   };
   return (
-    <div className="font-sans px-4 space-y-6">
+    <div className="flex  flex-col items-center font-sans px-6 space-y-6 ">
       {upcoming.length > 0 ? (
         <>
           <h2 className="text-xl font-semibold">Upcoming (next 30 days)</h2>
-          <div className="grid grid-cols-2 w-full gap-6">
+          <div className="grid grid-cols-2 justify-center w-full gap-6">
             {upcoming.map((subscription) => {
               return (
                 <SubscriptionCard
@@ -173,7 +173,7 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
       {quarterly.length > 0 && (
         <>
           <h2 className="text-xl font-semibold">Quarterly</h2>
-          <div className="grid grid-cols-2 w-full mt-6">
+          <div className="grid grid-cols-2 justify-center gap-6 w-full mt-6">
             {quarterly.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
@@ -189,7 +189,7 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
       {semiAnnual.length > 0 && (
         <>
           <h2 className="text-xl font-semibold">Semi-Annual</h2>
-          <div className="grid grid-cols-2 w-full mt-6">
+          <div className="grid grid-cols-2  justify-center gap-6 w-full mt-6">
             {semiAnnual.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
@@ -205,7 +205,7 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
       {annual.length > 0 && (
         <>
           <h2 className="text-xl font-semibold">Annual</h2>
-          <div className="grid grid-cols-2 w-full mt-6">
+          <div className="grid grid-cols-2  justify-center gap-6 w-full mt-6">
             {annual.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
