@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addSubscription } from "../lib/services/createSubscription";
-import { PaymentPopover } from "./payment-method-popover";
+import NewPaymentPopover from "./payment-method-popover";
 import { PaymentMethod } from "../lib/types";
 // import useSession from "../hooks/useSession";
 import { Plus } from "lucide-react";
@@ -40,12 +40,12 @@ export default function NewSubscription({
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [payment_method, setPaymentMethod] = useState<string>("");  
+  const [payment_method, setPaymentMethod] = useState<string>("");
   const paymentCyclesList = ["monthly", "quarterly", "semi-annual", "annual"];
-  const [payment_cycle, setPaymentCycle] = useState<string>(paymentCyclesList[0]);
+  const [payment_cycle, setPaymentCycle] = useState<string>(
+    paymentCyclesList[0]
+  );
   const [submiting, setSubmiting] = useState<boolean>(false);
- 
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,35 +149,29 @@ export default function NewSubscription({
                 className=""
               />
             </div>
-             {/* Payment cycle */}
-             <div className="col-span-2">
+            {/* Payment cycle */}
+            <div className="col-span-2">
               <Label htmlFor="paymentCycle" className="text-right">
                 Payment cycle
               </Label>
               <Select
-                 
-                  value={payment_cycle}
-                  onValueChange= {(value: string) => {
-                   
-                      setPaymentCycle(value);
-                    
-                  }}
-                  
-                 
-                  required
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a payment method" />
-                  </SelectTrigger>
-                   <SelectContent>
-                   {paymentCyclesList.map((cycle: string) => (
-                     <SelectItem key={cycle} value={cycle}>
-                       {cycle}
-                     </SelectItem>
-                   ))}
-                  
-                 </SelectContent>
-                </Select>
+                value={payment_cycle}
+                onValueChange={(value: string) => {
+                  setPaymentCycle(value);
+                }}
+                required
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentCyclesList.map((cycle: string) => (
+                    <SelectItem key={cycle} value={cycle}>
+                      {cycle}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             {/* Payment method */}
             <div className="col-span-4">
@@ -200,14 +194,13 @@ export default function NewSubscription({
                     <SelectValue placeholder="Select a payment method" />
                   </SelectTrigger>
                   <SelectContent>
-                    <PaymentPopover />
+                    <NewPaymentPopover user_id={userId} onRefresh={onRefresh} />
 
-                    <SelectItem value={`${paymentMethods?.[0]?.name}`}>
-                      {paymentMethods?.[0]?.name}
-                    </SelectItem>
-                    <SelectItem value={`${paymentMethods?.[1]?.name}`}>
-                      {paymentMethods?.[1]?.name}
-                    </SelectItem>
+                    {(paymentMethods ?? []).map((pm) => (
+                      <SelectItem key={pm.id ?? pm.name} value={pm.name}>
+                        {pm.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

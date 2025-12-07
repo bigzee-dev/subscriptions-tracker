@@ -1,19 +1,19 @@
 import { supabase } from "../../config/supabaseClient";
 
-export const addPaymentMethod = async (
-  user_id: string,
-  payment_method_name: string
+export const addNewPaymentMethod = async (
+  payment_method_name: string,
+  user_id?: string
 ) => {
   if (user_id) {
+    console.log("userid in function:", user_id);
     // Normalize the service_name to ensure consistent comparison
     const normalizedPaymentMethodName = payment_method_name.trim();
 
     // Insert the new subscription
-    const { data, error } = await supabase.from("payment-method").insert([
+    const { data, error } = await supabase.from("payment_methods").insert([
       {
         user_id,
         name: normalizedPaymentMethodName, // Use normalized name
-        created_at: new Date().toISOString(), // Use ISO string format
       },
     ]);
 

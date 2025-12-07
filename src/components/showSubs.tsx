@@ -1,16 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SubscriptionCard } from "./subscription-card";
 import { Subscription } from "../lib/types";
+import { PaymentMethod } from "../lib/types";
 
 interface ShowSubscriptionsProps {
   subscriptions: Subscription[];
+  paymentMethods?: PaymentMethod[];
   loading: boolean;
   error: string | null;
   onRefresh: () => void;
 }
 
 export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
-  const { subscriptions, loading, error, onRefresh } = props;
+  const { subscriptions, paymentMethods, loading, error, onRefresh } = props;
 
   // For display, use getNextDueDate(subscription.payment_due_day)
   // const formatDate = (date: Date) => date.toLocaleDateString("en-GB");
@@ -129,23 +131,26 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
     }
   };
   return (
-    <div className="flex flex-col items-center font-sans px-4">
+    <div className="font-sans px-4 space-y-6">
       {upcoming.length > 0 ? (
-        <div className="w-full space-y-5">
-          <h2 className="text-lg font-semibold">Upcoming (next 30 days)</h2>
-          {upcoming.map((subscription) => {
-            return (
-              <SubscriptionCard
-                key={subscription.id}
-                subscription={{
-                  ...subscription,
-                  payment_next_due_date: subscription.payment_next_due_date,
-                }}
-                handleSubscriptionDeleted={handleSubscriptionDeleted}
-              />
-            );
-          })}
-        </div>
+        <>
+          <h2 className="text-xl font-semibold">Upcoming (next 30 days)</h2>
+          <div className="grid grid-cols-2 w-full gap-6">
+            {upcoming.map((subscription) => {
+              return (
+                <SubscriptionCard
+                  key={subscription.id}
+                  subscription={{
+                    ...subscription,
+                    payment_next_due_date: subscription.payment_next_due_date,
+                  }}
+                  paymentMethods={paymentMethods}
+                  handleSubscriptionDeleted={handleSubscriptionDeleted}
+                />
+              );
+            })}
+          </div>
+        </>
       ) : (
         <NoSubsFound />
       )}
@@ -166,42 +171,51 @@ export default function ShowSubscriptions(props: ShowSubscriptionsProps) {
       )}
       {/* Other cycles */}
       {quarterly.length > 0 && (
-        <div className="w-full space-y-5 mt-6">
-          <h2 className="text-md font-semibold">Quarterly</h2>
-          {quarterly.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              subscription={subscription}
-              handleSubscriptionDeleted={handleSubscriptionDeleted}
-            />
-          ))}
-        </div>
+        <>
+          <h2 className="text-xl font-semibold">Quarterly</h2>
+          <div className="grid grid-cols-2 w-full mt-6">
+            {quarterly.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                paymentMethods={paymentMethods}
+                handleSubscriptionDeleted={handleSubscriptionDeleted}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {semiAnnual.length > 0 && (
-        <div className="w-full space-y-5 mt-6">
-          <h2 className="text-md font-semibold">Semi-Annual</h2>
-          {semiAnnual.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              subscription={subscription}
-              handleSubscriptionDeleted={handleSubscriptionDeleted}
-            />
-          ))}
-        </div>
+        <>
+          <h2 className="text-xl font-semibold">Semi-Annual</h2>
+          <div className="grid grid-cols-2 w-full mt-6">
+            {semiAnnual.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                paymentMethods={paymentMethods}
+                handleSubscriptionDeleted={handleSubscriptionDeleted}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {annual.length > 0 && (
-        <div className="w-full space-y-5 mt-6">
-          <h2 className="text-md font-semibold">Annual</h2>
-          {annual.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              subscription={subscription}
-              handleSubscriptionDeleted={handleSubscriptionDeleted}
-            />
-          ))}
-        </div>
+        <>
+          <h2 className="text-xl font-semibold">Annual</h2>
+          <div className="grid grid-cols-2 w-full mt-6">
+            {annual.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                paymentMethods={paymentMethods}
+                handleSubscriptionDeleted={handleSubscriptionDeleted}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

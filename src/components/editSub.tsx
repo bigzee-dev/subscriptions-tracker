@@ -19,7 +19,8 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "../config/supabaseClient"; // Adjust the import according to your project structure
+import { supabase } from "../config/supabaseClient";
+import { PaymentMethod } from "../lib/types";
 
 type Subscription = {
   id: string;
@@ -33,18 +34,23 @@ type Subscription = {
 
 type EditSubscriptionProps = {
   subscription: Subscription | null;
+  paymentMethods?: PaymentMethod[];
   onClose: () => void;
 };
 
 export default function EditSubscription({
   subscription,
+  paymentMethods,
   onClose,
 }: EditSubscriptionProps) {
   const [service_name, setServiceName] = useState<string>("");
   const [payment_due_date, setPaymentDueDate] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [payment_method, setPaymentMethod] = useState<string>("Credit Card");
+  const [payment_method, setPaymentMethod] = useState<string>("");
   const [submiting, setSubmiting] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+
+  console.log("EditSubscription paymentMethods:", paymentMethods);
 
   useEffect(() => {
     if (subscription) {
@@ -73,6 +79,7 @@ export default function EditSubscription({
       console.error("Error updating subscription:", error);
     } else {
       console.log("Subscription updated successfully");
+      setOpen(false);
       onClose();
     }
     setSubmiting(false);
@@ -80,7 +87,7 @@ export default function EditSubscription({
 
   return (
     <div className="flex-1">
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="w-full text-xs">
             <Edit className="mr-2 h-4 w-4" />
@@ -142,8 +149,11 @@ export default function EditSubscription({
                     <SelectValue placeholder="Select a payment method" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Credit Card">Credit Card</SelectItem>
-                    <SelectItem value="PayPal">PayPal</SelectItem>
+                    {(paymentMethods ?? []).map((pm) => (
+                      <SelectItem key={pm.id ?? pm.name} value={pm.name}>
+                        {pm.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

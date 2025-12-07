@@ -13,7 +13,6 @@ export default function Dashboard() {
     useSubscriptions();
   const { paymentMethods, fetchPaymentMethods } = usePaymentMethods();
 
-
   useEffect(() => {
     if (session?.user.id) {
       fetchPaymentMethods(session.user.id);
@@ -24,8 +23,9 @@ export default function Dashboard() {
   const handleRefresh = useCallback(() => {
     if (session?.user.id) {
       fetchSubscriptions(session.user.id);
+      fetchPaymentMethods(session.user.id);
     }
-  }, [fetchSubscriptions, session?.user.id]);
+  }, [fetchSubscriptions, fetchPaymentMethods, session?.user.id]);
 
   return (
     <div className="w-full h-full min-h-screen flex flex-col">
@@ -34,14 +34,15 @@ export default function Dashboard() {
         <Stats subscriptions={subscriptions} />
         <NewSubscription
           userId={session?.user.id}
-          paymentMethods={paymentMethods}         
+          paymentMethods={paymentMethods}
           onRefresh={handleRefresh}
         />
       </div>
 
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full pb-20">
         <ShowSubscriptions
           subscriptions={subscriptions}
+          paymentMethods={paymentMethods}
           loading={loading}
           error={error}
           onRefresh={handleRefresh}

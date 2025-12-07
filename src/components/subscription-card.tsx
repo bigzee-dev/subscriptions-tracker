@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Calendar, CreditCard, Edit, MoreVertical, Trash2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { RiExternalLinkFill } from "react-icons/ri";
+import { PaymentMethod } from "../lib/types";
 
 import {
   DropdownMenu,
@@ -25,7 +25,6 @@ interface SubscriptionCardProps {
   payment_cycle: string;
   payment_due_date: string;
   payment_due_day: number;
-  // optional previously-computed next due date (ISO string)
   payment_next_due_date?: string;
   payment_method: string;
   created_at: string;
@@ -83,26 +82,16 @@ const getDaysLeft = (
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// const getStatusColor = (status: string) => {
-//   switch (status) {
-//     case "active":
-//       return "bg-green-100 text-green-800 hover:bg-green-100";
-//     case "pending":
-//       return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
-//     case "cancelled":
-//       return "bg-red-100 text-red-800 hover:bg-red-100";
-//     default:
-//       return "bg-gray-100 text-gray-800 hover:bg-gray-100";
-//   }
-// };
-
 export const SubscriptionCard = ({
   subscription,
+  paymentMethods,
   handleSubscriptionDeleted,
 }: {
   subscription: SubscriptionCardProps;
+  paymentMethods?: PaymentMethod[];
   handleSubscriptionDeleted: () => void;
 }) => {
+  console.log("SubscriptionCard paymentMethods:", paymentMethods);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   // Calculate days left — prefer computed next due date
@@ -127,7 +116,7 @@ export const SubscriptionCard = ({
   const infoBox = "flex flex-col items-start gap-y-2 max-w-max ";
 
   return (
-    <Card className="w-full max-w-lg">
+    <Card className="w-full max-w-lg col-span-1">
       <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-1">
         <div className="flex gap-x-1.5 items-center ">
           {logoUrl ? (
@@ -225,6 +214,7 @@ export const SubscriptionCard = ({
         <div className="flex space-x-2 pt-1">
           <EditSubscription
             subscription={subscription}
+            paymentMethods={paymentMethods}
             onClose={handleSubscriptionDeleted}
           />
           <DeleteSubscription

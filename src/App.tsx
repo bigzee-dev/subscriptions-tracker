@@ -24,7 +24,7 @@ export default function App() {
   }
 
   return (
-    <div className="bg-neutral-100 max-w-lg mx-auto">
+    <div className="bg-neutral-100 max-w-6xl mx-auto">
       {session ? (
         <Dashboard />
       ) : (
